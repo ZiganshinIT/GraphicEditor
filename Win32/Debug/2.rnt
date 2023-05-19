@@ -1,0 +1,4 @@
+{"TLine":{"StartPoint":{"X":"227","Y":"309"},"EnPoint":{"X":"679","Y":"310"},"Width":"2","Color":{"R":"255","G":"0","B":"255"}}}
+{"TCircle":{"CenterPoint":{"X":"252","Y":"181"},"Radius":"190","Width":"1","Color":{"R":"0","G":"0","B":"0"}}}
+{"TRectangle":{"MinPoint":{"X":"251","Y":"252"},"MaxPoint":{"X":"520","Y":"100"},"Width":"1","Color":{"R":"0","G":"255","B":"0"}}}
+{"TRectangle":{"MinPoint":{"X":"552","Y":"92"},"MaxPoint":{"X":"800","Y":"343"},"Width":"1","Color":{"R":"0","G":"255","B":"0"}}}

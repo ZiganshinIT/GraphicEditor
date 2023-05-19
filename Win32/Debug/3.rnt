@@ -1,0 +1,7 @@
+{"TLine":{"StartPoint":{"X":"234","Y":"148"},"EndPoint":{"X":"533","Y":"312"},"Width":"1","Color":{"R":"0","G":"0","B":"0"}}}
+{"TLine":{"StartPoint":{"X":"456","Y":"121"},"EndPoint":{"X":"738","Y":"332"},"Width":"1","Color":{"R":"0","G":"0","B":"0"}}}
+{"TCircle":{"CenterPoint":{"X":"155","Y":"244"},"Radius":"100","Width":"3","Color":{"R":"255","G":"128","B":"0"}}}
+{"TCircle":{"CenterPoint":{"X":"264","Y":"189"},"Radius":"100","Width":"3","Color":{"R":"255","G":"128","B":"0"}}}
+{"TCircle":{"CenterPoint":{"X":"494","Y":"260"},"Radius":"154","Width":"3","Color":{"R":"255","G":"128","B":"0"}}}
+{"TCircle":{"CenterPoint":{"X":"809","Y":"209"},"Radius":"169","Width":"3","Color":{"R":"255","G":"128","B":"0"}}}
+{"TRectangle":{"MinPoint":{"X":"350","Y":"84"},"MaxPoint":{"X":"466","Y":"54"},"Width":"7","Color":{"R":"64","G":"0","B":"64"}}}

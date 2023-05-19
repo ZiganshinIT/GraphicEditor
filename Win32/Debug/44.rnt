@@ -1,0 +1,6 @@
+{"TLine":{"StartPoint":{"X":"251","Y":"105"},"EndPoint":{"X":"529","Y":"260"},"Width":"1","Color":{"R":"0","G":"0","B":"0"}}}
+{"TLine":{"StartPoint":{"X":"389","Y":"62"},"EndPoint":{"X":"689","Y":"274"},"Width":"1","Color":{"R":"0","G":"0","B":"0"}}}
+{"TLine":{"StartPoint":{"X":"567","Y":"88"},"EndPoint":{"X":"306","Y":"222"},"Width":"1","Color":{"R":"0","G":"0","B":"0"}}}
+{"TLine":{"StartPoint":{"X":"703","Y":"169"},"EndPoint":{"X":"380","Y":"258"},"Width":"1","Color":{"R":"0","G":"0","B":"0"}}}
+{"TCircle":{"CenterPoint":{"X":"488","Y":"176"},"Radius":"100","Width":"1","Color":{"R":"0","G":"0","B":"0"}}}
+{"TRectangle":{"MinPoint":{"X":"420","Y":"97"},"MaxPoint":{"X":"546","Y":"249"},"Width":"1","Color":{"R":"0","G":"0","B":"0"}}}
