@@ -113,12 +113,12 @@ begin
   InitGlobPoint := fMyCanvas.GetGlobalPoint(fInitialPoint);
   EndGlobPoint := fMyCanvas.GetGlobalPoint(fEndPoint);
 
-  if ((fInitialPoint.X <> 0) and (fInitialPoint.Y <> 0)) or
-  ((fEndPoint.X <> 0) and (fEndPoint.Y <> 0) and (Tools = Circle)) then
-    fMyDrawing.PreDraw(InitGlobPoint, EndGlobPoint, Tools,
-      TColor.Create(GetRValue(fPenColor), GetGValue(fPenColor), GetBValue(fPenColor)), fPenWidth);
+  if ((fInitialPoint.X <> 0) and (fInitialPoint.Y <> 0)) or (Tools = Circle) then
+    fMyDrawing.PreDraw(InitGlobPoint, EndGlobPoint, Tools, TColor.Create(GetRValue(fPenColor),
+      GetGValue(fPenColor), GetBValue(fPenColor)), fPenWidth);
 
-  if fMyDrawing.fLastSelectedFigure = -1 then ContextMenu.AutoPopup := False
+  if fMyDrawing.fLastSelectedFigure = -1 then
+    ContextMenu.AutoPopup := False
   else ContextMenu.AutoPopup := True;
 end;
 
@@ -144,21 +144,19 @@ begin
     fMyDrawing.isPaintBoxScrollable := True;
     PaintBox.Cursor := 100;
   end else begin
-    if fIsFirstTap then begin
-      fInitialPoint := TPoint.Create(X, Y);
-    end else begin
-      fInitialPoint := TPoint.Create(0, 0);
-    end;
+    if fIsFirstTap then fInitialPoint := TPoint.Create(X, Y)
+    else fInitialPoint := TPoint.Create(0, 0);
     fIsFirstTap := not fIsFirstTap;
 
     fMyDrawing.ToolsAction(GlobPoint, Tools, TColor.Create(GetRValue(fPenColor),
       GetGValue(fPenColor), GetBValue(fPenColor)), fPenWidth);
 
-    fMyDrawing.isFigureMoveable := True;
-    fMyDrawing.isVertexMoveable := True;
+    if fMyDrawing.fLastSelectedFigure <> -1 then begin
+      fMyDrawing.isFigureMoveable := True;
+      fMyDrawing.isVertexMoveable := True;
+    end;
 
     Cursor := fMyDrawing.GetCursor(GlobPoint);
-
     PaintBox.Refresh;
   end;
 end;
@@ -167,53 +165,42 @@ procedure TForm2.PaintBoxMouseMove(Sender: TObject; Shift: TShiftState; X,
   Y: Integer);
 var
   GlobPoint: T2DPoint;
-  ViewPortX, ViewPortY: Double;
 begin
   fEndPoint := TPoint.Create(X, Y);
   GlobPoint := fMyCanvas.GetGlobalPoint(TPoint.Create(X, Y));
 
-  ViewPortX := fC.ViewPort.Max.X;
-  ViewPortY := fC.ViewPort.Max.Y;
+  if fMyDrawing.isPaintBoxScrollable then
+    fC.ScrollCanvas(TPoint.Create(X, Y), fMyDrawing.fClickPoint, PaintBox.Width, PaintBox.Height);
 
-  if fMyDrawing.isPaintBoxScrollable then begin
-    fC.ScrollCanvas(TPoint.Create(X, Y), fMyDrawing.fClickPoint,
-      PaintBox.Width, PaintBox.Height);
-    if fIsFirstTap = False then begin
-      fInitialPoint.X := Round(fInitialPoint.X + (ViewPortX - fC.ViewPort.Max.X));
-      fInitialPoint.Y := Round(fInitialPoint.Y - (ViewPortY - fC.ViewPort.Max.Y));
-    end;
-
+  if fIsFirstTap = False then begin
+    fInitialPoint.X := Round(fInitialPoint.X + (fC.ViewPort.Max.X - fC.ViewPort.Max.X));
+    fInitialPoint.Y := Round(fInitialPoint.Y - (fC.ViewPort.Max.Y - fC.ViewPort.Max.Y));
   end;
 
-  if fMyDrawing.isVertexMoveable then
-    fMyDrawing.VertexMove(GlobPoint);
-
-  if fMyDrawing.isFigureMoveable then
-    fMyDrawing.FigureMove(GlobPoint);
+  if fMyDrawing.isVertexMoveable then fMyDrawing.VertexMove(GlobPoint);
+  if fMyDrawing.isFigureMoveable then fMyDrawing.FigureMove(GlobPoint);
 
   if Tools = Hand then begin
     fMyDrawing.fPick.SetClickPoint(fMyCanvas.GetGlobalPoint(TPoint.Create(X, Y)));
     fMyDrawing.HoverFigure(GlobPoint);
   end;
-
   Cursor := fMyDrawing.GetCursor(GlobPoint);
-
   StatusBar.Panels[0].Text := IntToStr(X) + ', ' + IntToStr(Y) + ' οκρ ';
 
-  refresh;
+  Refresh;
 end;
 
 procedure TForm2.PaintBoxMouseUp(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
 begin
+  fMyDrawing.isVertexMoveable := False;
+  fMyDrawing.isFigureMoveable := False;
+  fMyDrawing.fLastSelectedVertex := -1;
+
   if Button=mbRight then begin
     fMyDrawing.isPaintBoxScrollable := False;
     PaintBox.Cursor := crDefault;
   end;
-
-  fMyDrawing.isVertexMoveable := False;
-  fMyDrawing.isFigureMoveable := False;
-  fMyDrawing.fLastSelectedVertex := -1;
 end;
 
 procedure TForm2.SaveButtonClick(Sender: TObject);
@@ -249,9 +236,8 @@ end;
 
 procedure TForm2.RotateButtonClick(Sender: TObject);
 begin
-  if fMyDrawing.fFigures[fMyDrawing.fLastSelectedFigure].ClassName = 'TRectangle' then begin
+  if fMyDrawing.fFigures[fMyDrawing.fLastSelectedFigure].ClassName = 'TRectangle' then
     (fMyDrawing.fFigures[fMyDrawing.fLastSelectedFigure] as TRectangle).Rotate(45);
-  end;
 end;
 
 procedure TForm2.LineButtonClick(Sender: TObject);
@@ -303,28 +289,27 @@ begin
   if ColorDialog.Execute then begin
     fPenColor := ColorDialog.Color;
     if fMyDrawing.fLastSelectedFigure <> -1 then begin
-      fMyDrawing.fFigures[fMyDrawing.fLastSelectedFigure].Color := TColor.Create(GetRValue(fPenColor), GetGValue(fPenColor), GetBValue(fPenColor));
+      fMyDrawing.fFigures[fMyDrawing.fLastSelectedFigure].Color := TColor.Create(GetRValue(fPenColor),
+        GetGValue(fPenColor), GetBValue(fPenColor));
+      Refresh;
     end;
-    refresh;
   end;
 end;
 
 procedure TForm2.DeleteObjectActionClick(Sender: TObject);
 begin
   fMyDrawing.Delete();
-  refresh;
+  Refresh;
 end;
 
 procedure TForm2.WidthEditChange(Sender: TObject);
-var
-  str: string;
 begin
-  str := WidthEdit.Text;
+  var str: string := WidthEdit.Text;
   fPenWidth := str.ToInteger;
   if fMyDrawing.fLastSelectedFigure <> -1 then begin
     fMyDrawing.fFigures[fMyDrawing.fLastSelectedFigure].Width := fPenWidth;
+    Refresh;
   end;
-  refresh;
 end;
 
 procedure TForm2.ResetFields;
@@ -335,11 +320,8 @@ end;
 
 procedure TForm2.CheckButton(b: TToolButton);
 begin
-  if fCheckedButton <> nil then begin
-    fCheckedButton.Down := False;
-  end;
+  fCheckedButton.Down := False;
   fCheckedButton := b;
   fCheckedButton.Down := True;
 end;
-
 end.

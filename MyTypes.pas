@@ -43,12 +43,6 @@ type
     Hand
   );
 
-  TDirection = (
-    Horizontal,
-    Vertical,
-    Diogonal
-  );
-
   IDraw = interface(IUnknown)
   ['{5FBAF284-9ECF-4F2F-85FE-E1662FB450F6}']
     procedure BeginPrimitive(Typ: TPrimitiveType);
@@ -279,26 +273,22 @@ end;
 function TFigure.BelongsVertex(p: T2DPoint): Boolean;
 var
   I: Integer;
-  Res: Boolean;
 begin
-  Res := False;
-  for I := 0 to Length(fVertexArr) do
-  begin
-    if InVertexRange(p, fVertexArr[I]) then Res := True;
-    Result := Res;
+  Result := False;
+  for I := 0 to Length(fVertexArr) do begin
+    if InVertexRange(p, fVertexArr[I]) then begin
+      Result := True;
+      break;
+    end;
   end;
 end;
 
 function TFigure.DeserializeColor(ColorObj: TJSONValue): TColor;
-var
-  R, G, B: Integer;
-  Color: TColor;
 begin
-  R := ColorObj.FindValue('R').Value.ToInteger;
-  G := ColorObj.FindValue('G').Value.ToInteger;
-  B := ColorObj.FindValue('B').Value.ToInteger;
-  Color := TColor.Create(R, G, B);
-
+  var R := ColorObj.FindValue('R').Value.ToInteger;
+  var G := ColorObj.FindValue('G').Value.ToInteger;
+  var B := ColorObj.FindValue('B').Value.ToInteger;
+  var Color := TColor.Create(R, G, B);
   Result := Color;
 end;
 
@@ -308,15 +298,12 @@ var
 begin
   Point.X := PointObj.FindValue('X').Value.ToDouble;
   Point.Y := PointObj.FindValue('Y').Value.ToDouble;
-
   Result := Point;
 end;
 
 function TFigure.DeserializeInteger(WidthObj: TJSONValue): Integer;
-var
-  Value: Integer;
 begin
-  Value := WidthObj.Value.ToInteger;
+  var Value := WidthObj.Value.ToInteger;
   Result := Value;
 end;
 
@@ -342,12 +329,9 @@ begin
 end;
 
 function TFigure.GetFigureVertex(p: T2DPoint): Integer;
-var
-  I: Integer;
 begin
-  for I := 0 to Length(fVertexArr) do begin
+  for var I := 0 to Length(fVertexArr) do
     if InVertexRange(p, fVertexArr[I]) then Result := I;
-  end;
 end;
 
 function TFigure.InVertexRange(p, Vertex: T2DPoint): Boolean;
@@ -361,57 +345,49 @@ begin
     and
     InRange(p.Y,
     min(Vertex.Y - VERTEX_WIDTH - VERTEX_CLICK_ADDITION_AREA,
-     Vertex.Y  + VERTEX_WIDTH + VERTEX_CLICK_ADDITION_AREA),
+    Vertex.Y  + VERTEX_WIDTH + VERTEX_CLICK_ADDITION_AREA),
     max(Vertex.Y - VERTEX_WIDTH - VERTEX_CLICK_ADDITION_AREA,
     Vertex.Y + VERTEX_WIDTH + VERTEX_CLICK_ADDITION_AREA))
 end;
 
 function TFigure.SerializeColor(Color: TColor): TJSONObject;
-var
-  ColorObj: TJSONObject;
 begin
-  ColorObj := TJSONObject.Create;
+  var ColorObj := TJSONObject.Create;
   ColorObj.AddPair('R', IntToStr(Color.R));
   ColorObj.AddPair('G', IntToStr(Color.G));
   ColorObj.AddPair('B', IntToStr(Color.B));
-
   Result := ColorObj;
 end;
 
 function TFigure.SerializePoint(Point: T2DPoint): TJSONObject;
-var
-  PointObj: TJSONObject;
 begin
-  PointObj := TJSONObject.Create;
+  var PointObj := TJSONObject.Create;
   PointObj.AddPair('X', FloatToStr(Point.X));
   PointObj.AddPair('Y', FloatToStr(Point.Y));
-
   Result := PointObj;
 end;
 
 { TLine }
 
 function TLine.PickFigure(p: T2DPoint; Picker: IPicker): Boolean;
-var
-  I: Integer;
 begin
-  for I := 0 to Length(fDistanceXY) - 1 do
+  for var I := 0 to Length(fDistanceXY) - 1 do
     fDistanceXY[I] := T2DPoint.Create(p.X - fVertexArr[I].X, p.Y - fVertexArr[I].Y);
+
   Picker.BeginPrimitive(ptLines);
-    for I := 0 to Length(self.fVertexArr) - 1 do Picker.AddVertex(self.fVertexArr[I]);
+    for var I := 0 to Length(self.fVertexArr) - 1 do Picker.AddVertex(self.fVertexArr[I]);
   Picker.EndPrimitive;
+
   Result := Picker.GetResult;
 end;
 
 procedure TLine.Draw(Canvas: ICanvas);
-var
-  I: Integer;
 begin
   Canvas.SetLineWidth(self.Width);
   Canvas.SetCurrentColor(self.Color.Value);
 
   Canvas.BeginPrimitive(ptLines);
-    for I := 0 to Length(fVertexArr) do Canvas.AddVertex(fVertexArr[I]);
+    for var I := 0 to Length(fVertexArr) do Canvas.AddVertex(fVertexArr[I]);
   Canvas.EndPrimitive;
 end;
 
@@ -430,17 +406,13 @@ begin
 end;
 
 function TLine.ToJSON: TJSONObject;
-var
-  json: TJSONObject;
-  IntermediateObj ,StartPointObj, EndPointObj, ColorObj: TJSONObject;
 begin
-  json := TJSONObject.Create;
+  var json := TJSONObject.Create;
+  var IntermediateObj := TJSONObject.Create;
 
-  IntermediateObj := TJSONObject.Create;
-
-  StartPointObj := SerializePoint(fVertexArr[0]);
-  EndPointObj := SerializePoint(fVertexArr[1]);
-  ColorObj := SerializeColor(Color);
+  var StartPointObj := SerializePoint(fVertexArr[0]);
+  var EndPointObj := SerializePoint(fVertexArr[1]);
+  var ColorObj := SerializeColor(Color);
 
   IntermediateObj.AddPair('StartPoint', StartPointObj);
   IntermediateObj.AddPair('EndPoint', EndPointObj);
@@ -449,19 +421,15 @@ begin
 
   json.AddPair(self.ClassName, IntermediateObj);
 
-  result := json;
+  Result := json;
 end;
 
 constructor TLine.CreateFromJSOn(json: TJSONValue);
-var
-  StartPoint, EndPoint: T2DPoint;
-  Width: Integer;
-  Color: TColor;
 begin
-  StartPoint := DeserializePoint(json.FindValue('StartPoint'));
-  EndPoint := DeserializePoint(json.FindValue('EndPoint'));
-  Width := DeserializeInteger(json.FindValue('Width'));
-  Color := DeserializeColor(json.FindValue('Color'));
+  var StartPoint := DeserializePoint(json.FindValue('StartPoint'));
+  var EndPoint := DeserializePoint(json.FindValue('EndPoint'));
+  var Width := DeserializeInteger(json.FindValue('Width'));
+  var Color := DeserializeColor(json.FindValue('Color'));
 
   CreateLine(StartPoint, EndPoint, Width, Color)
 end;
@@ -481,7 +449,6 @@ end;
 
 function TCircle.PickFigure(p: T2DPoint; Picker: IPicker): Boolean;
 var
-  I: Integer;
   clarity, cRotation: Double;
 begin
   fDistanceXY[0] := T2DPoint.Create(p.X - fVertexArr[0].X, p.Y - fVertexArr[0].Y);
@@ -527,16 +494,12 @@ begin
 end;
 
 function TCircle.ToJSON: TJSONObject;
-var
-  json: TJSONObject;
-  IntermediateObj, CenterPointObj, ColorObj: TJSONObject;
 begin
-  json := TJSONObject.Create;
+  var json := TJSONObject.Create;
+  var IntermediateObj := TJSONObject.Create;
 
-  IntermediateObj := TJSONObject.Create;
-
-  CenterPointObj := SerializePoint(fVertexArr[0]);
-  ColorObj := SerializeColor(Color);
+  var CenterPointObj := SerializePoint(fVertexArr[0]);
+  var ColorObj := SerializeColor(Color);
 
   IntermediateObj.AddPair('CenterPoint', CenterPointObj);
   IntermediateObj.AddPair('Radius', FloatToStr(Radius));
@@ -566,29 +529,22 @@ begin
 end;
 
 constructor TCircle.CreateFromJSON(json: TJSONValue);
-var
-  CenterPoint: T2DPoint;
-  Radius, Width: Integer;
-  Color: TColor;
 begin
-  CenterPoint := DeserializePoint(json.FindValue('CenterPoint'));
-  Radius := DeserializeInteger(json.FindValue('Radius'));
-  Width := DeserializeInteger(json.FindValue('Width'));
-  Color := DeserializeColor(json.FindValue('Color'));
-
+  var CenterPoint := DeserializePoint(json.FindValue('CenterPoint'));
+  var Radius := DeserializeInteger(json.FindValue('Radius'));
+  var Width := DeserializeInteger(json.FindValue('Width'));
+  var Color := DeserializeColor(json.FindValue('Color'));
   CreateCircle(CenterPoint, Radius, Width, Color)
 end;
 
 { TRectangle }
 
 function TRectangle.PickFigure(p: T2DPoint; Picker: IPicker): Boolean;
-var
-  I: Integer;
 begin
-  for I := 0 to Length(fDistanceXY) - 1 do
+  for var I := 0 to Length(fDistanceXY) - 1 do
     fDistanceXY[I] := T2DPoint.Create(p.X - fVertexArr[I].X, p.Y - fVertexArr[I].Y);
   Picker.BeginPrimitive(ptQuads);
-    for I := 0 to Length(fVertexArr) - 1 do begin
+    for var I := 0 to Length(fVertexArr) - 1 do begin
       Picker.AddVertex(fVertexArr[I]);
       if Picker.GetResult = True then break;
     end;
@@ -597,56 +553,43 @@ begin
 end;
 
 procedure TRectangle.Rotate(Angle: Double);
-var
-  CenterPoint: T2DPoint;
-  X, Y: Double;
-  I: Integer;
 begin
   self.Angle := self.Angle + Angle;
-
-  CenterPoint := T2DPoint.Create(fVertexArr[1].X + (fVertexArr[3].X - fVertexArr[1].X) / 2, fVertexArr[1].Y + (fVertexArr[3].Y - fVertexArr[1].Y) / 2);
-  for I := 0 to 3 do begin
-    X := (fVertexArr[I].X - CenterPoint.X) * cos(DegToRad(Angle)) - (fVertexArr[I].Y  - CenterPoint.Y) * sin(DegToRad(Angle)) + CenterPoint.X;
-    Y := (fVertexArr[I].X - CenterPoint.X) * sin(DegToRad(Angle)) + (fVertexArr[I].Y  - CenterPoint.Y) * cos(DegToRad(Angle)) + CenterPoint.Y;
+  var CenterPoint := T2DPoint.Create(fVertexArr[1].X + (fVertexArr[3].X - fVertexArr[1].X) / 2, fVertexArr[1].Y + (fVertexArr[3].Y - fVertexArr[1].Y) / 2);
+  for var I := 0 to 3 do begin
+    var X := (fVertexArr[I].X - CenterPoint.X) * cos(DegToRad(Angle)) - (fVertexArr[I].Y  - CenterPoint.Y) * sin(DegToRad(Angle)) + CenterPoint.X;
+    var Y := (fVertexArr[I].X - CenterPoint.X) * sin(DegToRad(Angle)) + (fVertexArr[I].Y  - CenterPoint.Y) * cos(DegToRad(Angle)) + CenterPoint.Y;
     fVertexArr[I].X := X;
     fVertexArr[I].Y := Y;
   end
 end;
 
 procedure TRectangle.Draw(Canvas: ICanvas);
-var
-  I: Integer;
 begin
   Canvas.SetCurrentColor(self.Color.Value);
   Canvas.SetLineWidth(self.Width);
 
   Canvas.BeginPrimitive(ptQuads);
-    for I := 0 to Length(fVertexArr) - 1 do Canvas.AddVertex(fVertexArr[I]);
+    for var I := 0 to Length(fVertexArr) - 1 do Canvas.AddVertex(fVertexArr[I]);
   Canvas.EndPrimitive;
 end;
 
 procedure TRectangle.Move(MovePoint: T2DPoint);
-var
-  I: Integer;
 begin
-  for I := 0 to Length(self.fDistanceXY) - 1 do begin
+  for var I := 0 to Length(self.fDistanceXY) - 1 do begin
     fVertexArr[I].X := MovePoint.X - fDistanceXY[I].X;
     fVertexArr[I].Y := MovePoint.Y - fDistanceXY[I].Y;
   end;
 end;
 
 function TRectangle.ToJSON: TJSONObject;
-var
-  json: TJSONObject;
-  IntermediateObj, MinPointObj, MaxPointObj, ColorObj: TJSONObject;
 begin
-  json := TJSONObject.Create;
+  var json := TJSONObject.Create;
+  var IntermediateObj := TJSONObject.Create;
 
-  IntermediateObj := TJSONObject.Create;
-
-  MinPointObj := SerializePoint(fVertexArr[1]);
-  MaxPointObj := SerializePoint(fVertexArr[3]);
-  ColorObj := SerializeColor(Color);
+  var MinPointObj := SerializePoint(fVertexArr[1]);
+  var MaxPointObj := SerializePoint(fVertexArr[3]);
+  var ColorObj := SerializeColor(Color);
 
   IntermediateObj.AddPair('MinPoint', MinPointObj);
   IntermediateObj.AddPair('MaxPoint', MaxPointObj);
@@ -660,7 +603,6 @@ begin
 end;
 
 procedure TRectangle.VertexMove(Point: T2DPoint; lastSelectedVertex: Integer);
-var I: Integer;
 begin
   if (LastSelectedVertex = 0) then begin
     fVertexArr[LastSelectedVertex].X := Point.X;
@@ -701,21 +643,15 @@ begin
   self.fVertexArr[1] := T2DPoint.Create(MinPoint.X, MaxPoint.Y);
   self.fVertexArr[2] := MaxPoint;
   self.fVertexArr[3] := T2DPoint.Create(MaxPoint.X, MinPoint.Y);
-
-  if Self.Angle <> 0 then Rotate(self.Angle);
 end;
 
 constructor TRectangle.CreateFromJSON(json: TJSONValue);
-var
-  MinPoint, MaxPoint: T2DPoint;
-  Width: Integer;
-  Color: TColor;
 begin
-  MinPoint := DeserializePoint(json.FindValue('MinPoint'));
-  MaxPoint := DeserializePoint(json.FindValue('MaxPoint'));
-  Width := DeserializeInteger(json.FindValue('Width'));
-  Color := DeserializeColor(json.FindValue('Color'));
-  Angle := DeserializeInteger(json.FindValue('Angle'));
+  var MinPoint := DeserializePoint(json.FindValue('MinPoint'));
+  var MaxPoint := DeserializePoint(json.FindValue('MaxPoint'));
+  var Width := DeserializeInteger(json.FindValue('Width'));
+  var Color := DeserializeColor(json.FindValue('Color'));
+  var Angle := DeserializeInteger(json.FindValue('Angle'));
 
   CreateRectangle(MinPoint, MaxPoint, Width, Color, Angle);
 end;
