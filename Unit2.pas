@@ -6,7 +6,7 @@ uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ExtCtrls, MyCanvas, MyTypes, MyDrawing,
   Vcl.Menus, Vcl.StdCtrls, Vcl.ToolWin, Vcl.ComCtrls, Vcl.ActnMan, Vcl.ActnCtrls,
-  Vcl.TitleBarCtrls, System.ImageList, Vcl.ImgList, Vcl.NumberBox, MyPicker;
+  Vcl.TitleBarCtrls, System.ImageList, Vcl.ImgList, Vcl.NumberBox;
 
 type
   TForm2 = class(TForm)
@@ -31,10 +31,11 @@ type
     WidthEdit: TEdit;
     WidthUpDown: TUpDown;
 
-    ContextMenu: TPopupMenu;
-    DeleteObjectAction: TMenuItem;
     StatusBar: TStatusBar;
-    N451: TMenuItem;
+
+    ContextMenu: TPopupMenu;
+    RotateButton: TMenuItem;
+    DeleteObjectAction: TMenuItem;
 
     procedure FormCreate(Sender: TObject);
     procedure PaintBoxPaint(Sender: TObject);
@@ -57,21 +58,16 @@ type
 
     procedure WidthEditChange(Sender: TObject);
     procedure DeleteObjectActionClick(Sender: TObject);
-    procedure N451Click(Sender: TObject);
+    procedure RotateButtonClick(Sender: TObject);
 
   protected
     fC: TMyCanvas;
     fMyCanvas: ICanvas;
     fMyDrawing: TMyDrawing;
-    fMyPicker: IPicker;
-
     fIsFirstTap: Boolean;
     fInitialPoint, fEndPoint: TPoint;
-
     fPenColor, fPenWidth: Integer;
-
     fCheckedButton: TToolButton;
-
     procedure ResetFields;
     procedure CheckButton(b:TToolButton);
   end;
@@ -81,7 +77,6 @@ var
   Tools: TTools;
 
 implementation
-
 {$R *.dfm}
 
 procedure TForm2.FormCreate(Sender: TObject);
@@ -99,8 +94,6 @@ begin
 
   fMyDrawing := TMyDrawing.Create;
   fMyDrawing.fCanvas := fC;
-
-  fMyPicker := TMyPicker.Create;
 
   fIsFirstTap := True;
 
@@ -254,11 +247,7 @@ begin
   Refresh;
 end;
 
-procedure TForm2.N451Click(Sender: TObject);
-var
-  CenterPoint: T2DPoint;
-  X, Y: Double;
-  I: Integer;
+procedure TForm2.RotateButtonClick(Sender: TObject);
 begin
   if fMyDrawing.fFigures[fMyDrawing.fLastSelectedFigure].ClassName = 'TRectangle' then begin
     (fMyDrawing.fFigures[fMyDrawing.fLastSelectedFigure] as TRectangle).Rotate(45);

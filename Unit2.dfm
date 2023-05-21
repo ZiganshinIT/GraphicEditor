@@ -2,8 +2,8 @@ object Form2: TForm2
   Left = 0
   Top = 0
   Caption = 'Delphi Paint'
-  ClientHeight = 396
-  ClientWidth = 852
+  ClientHeight = 515
+  ClientWidth = 966
   Color = clBtnFace
   TransparentColorValue = clWhite
   DoubleBuffered = True
@@ -12,27 +12,26 @@ object Form2: TForm2
   Font.Height = -11
   Font.Name = 'Tahoma'
   Font.Style = []
-  OldCreateOrder = False
   OnCreate = FormCreate
   OnMouseWheel = FormMouseWheel
-  PixelsPerInch = 96
   TextHeight = 13
   object PaintBox: TPaintBox
     Left = 0
     Top = 35
-    Width = 852
-    Height = 342
+    Width = 966
+    Height = 461
     Align = alClient
     PopupMenu = ContextMenu
     OnMouseDown = PaintBoxMouseDown
     OnMouseMove = PaintBoxMouseMove
     OnMouseUp = PaintBoxMouseUp
     OnPaint = PaintBoxPaint
+    ExplicitTop = 29
   end
   object ToolBar: TToolBar
     Left = 0
     Top = 0
-    Width = 852
+    Width = 966
     Height = 35
     ButtonHeight = 38
     ButtonWidth = 39
@@ -44,6 +43,7 @@ object Form2: TForm2
     ParentShowHint = False
     ShowHint = False
     TabOrder = 0
+    ExplicitWidth = 960
     object SaveButton: TToolButton
       Left = 0
       Top = 0
@@ -115,7 +115,7 @@ object Form2: TForm2
     object WidthEdit: TEdit
       Left = 345
       Top = 0
-      Width = 50
+      Width = 56
       Height = 38
       TabStop = False
       Alignment = taCenter
@@ -136,7 +136,7 @@ object Form2: TForm2
       OnChange = WidthEditChange
     end
     object WidthUpDown: TUpDown
-      Left = 395
+      Left = 401
       Top = 0
       Width = 16
       Height = 38
@@ -149,27 +149,29 @@ object Form2: TForm2
   end
   object StatusBar: TStatusBar
     Left = 0
-    Top = 377
-    Width = 852
+    Top = 496
+    Width = 966
     Height = 19
     Panels = <
       item
         Width = 50
       end>
+    ExplicitTop = 487
+    ExplicitWidth = 960
   end
   object SaveDialog: TSaveDialog
-    Left = 16
-    Top = 72
+    Left = 24
+    Top = 48
   end
   object OpenDialog: TOpenDialog
-    Left = 16
-    Top = 128
+    Left = 24
+    Top = 104
   end
   object ImageList: TImageList
     Height = 32
     Width = 32
-    Left = 16
-    Top = 184
+    Left = 24
+    Top = 160
     Bitmap = {
       494C010107002400040020002000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000800000004000000001002000000000000080
@@ -1235,20 +1237,20 @@ object Form2: TForm2
       000000000000}
   end
   object ColorDialog: TColorDialog
-    Left = 16
-    Top = 240
+    Left = 24
+    Top = 216
   end
   object ContextMenu: TPopupMenu
     AutoPopup = False
-    Left = 16
-    Top = 296
+    Left = 24
+    Top = 272
     object DeleteObjectAction: TMenuItem
       Caption = #1059#1076#1072#1083#1080#1090#1100
       OnClick = DeleteObjectActionClick
     end
-    object N451: TMenuItem
+    object RotateButton: TMenuItem
       Caption = #1055#1086#1074#1077#1088#1085#1091#1090#1100' '#1085#1072' 45 '#1075#1088#1072#1076#1091#1089#1086#1074
-      OnClick = N451Click
+      OnClick = RotateButtonClick
     end
   end
 end
