@@ -17,7 +17,6 @@ type
     fCurrentColor: Integer;
 
     procedure SetCurrentColor(const Value: Integer);
-    procedure SetPointSize(const Value: integer);
     procedure SetLineWidth(const Value: integer);
     procedure SetViewPort(Value: T2DBox);
     procedure SetViewBox(Width, Height: Integer);
@@ -99,29 +98,23 @@ begin
 end;
 
 function TMyCanvas.GetCanvasPoint(const p: T2DPoint): TPoint;
-var
-  tx, ty: Double;
-  px, py: Integer;
 begin
-  tx := (p.x - ViewPort.Min.X) / (ViewPort.Max.X - ViewPort.Min.X);
-  ty := (p.y - ViewPort.Min.Y) / (ViewPort.Max.Y - ViewPort.Min.Y);
+  var tx := (p.x - ViewPort.Min.X) / (ViewPort.Max.X - ViewPort.Min.X);
+  var ty := (p.y - ViewPort.Min.Y) / (ViewPort.Max.Y - ViewPort.Min.Y);
 
-  px := Round(tx * self.fViewBoxWidth);
-  py := Round(self.fViewBoxHeight *  (1 - ty));
+  var px := Round(tx * self.fViewBoxWidth);
+  var py := Round(self.fViewBoxHeight *  (1 - ty));
 
   Result := TPoint.Create(px, py);
 end;
 
 function TMyCanvas.GetGlobalPoint(p: TPoint): T2DPoint;
-var
-  tx, ty: Double;
-  px, py: Integer;
 begin
-  tx := p.x / fViewBoxWidth;
-  ty := (fViewBoxHeight - p.y) / fViewBoxHeight;
+  var tx := p.x / fViewBoxWidth;
+  var ty := (fViewBoxHeight - p.y) / fViewBoxHeight;
 
-  px := Round(ViewPort.Min.X + tx * (ViewPort.Max.X - ViewPort.Min.X));
-  py := Round(ViewPort.Min.Y + ty * (ViewPort.Max.Y - ViewPort.Min.Y));
+  var px := Round(ViewPort.Min.X + tx * (ViewPort.Max.X - ViewPort.Min.X));
+  var py := Round(ViewPort.Min.Y + ty * (ViewPort.Max.Y - ViewPort.Min.Y));
 
   Result := T2DPoint.Create(px, py);
 end;
@@ -160,11 +153,6 @@ begin
   fCanvas.Pen.Width := Value;
 end;
 
-procedure TMyCanvas.SetPointSize(const Value: integer);
-begin
-
-end;
-
 procedure TMyCanvas.SetViewBox(Width, Height: Integer);
 begin
   fViewBoxWidth := Width;
@@ -173,17 +161,15 @@ end;
 
 procedure TMyCanvas.SetViewPort(Value: T2DBox);
 begin
-    FViewPort := Value;
+  FViewPort := Value;
 end;
 
 procedure TMyCanvas.ZoomCanvas(delta, pbWidth, pbHeight: Integer);
 begin
-  begin
   if (fViewBoxWidth + delta / 10 > MAX_WIDTH) and
     (fViewBoxHeight + delta / 10 > MAX_WIDTH) then begin
       fViewBoxWidth := Round(fViewBoxWidth + delta / 10 * (fViewBoxWidth / fViewBoxHeight));
       fViewBoxHeight := Round(fViewBoxHeight + delta / 10);
-  end;
   end;
 end;
 end.

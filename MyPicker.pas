@@ -29,10 +29,6 @@ implementation
 { TMyPicker }
 
 procedure TMyPicker.AddVertex(const p: T2DPoint);
-var
-   I: Integer;
-   Z: Extended;
-   delta: Real;
 begin
   case fPrimitive of
     ptLines:

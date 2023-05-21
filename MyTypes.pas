@@ -59,7 +59,6 @@ type
   ICanvas = interface(IDraw)
     ['{18F53F64-7DF4-4558-ABFB-9408BF725CA5}']
     procedure SetCurrentColor(const Value: integer);
-    procedure SetPointSize(const Value: integer);
     procedure SetViewPort(Value: T2DBox);
     procedure SetViewBox(Width, Height: Integer);
     procedure SetLineWidth(const Value: integer);

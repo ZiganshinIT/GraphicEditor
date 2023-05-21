@@ -6,14 +6,13 @@ type
   TMyDrawing = class(TInterfacedObject, IDrawing)
   public
     fCanvas: ICanvas;
+    fMyPicker: IPicker;
+    fPick: TMyPicker;
     fFigures: array of TFigure;
     fLastSelectedFigure: Integer;
     fLastSelectedVertex: Integer;
     fHoverFigure: Integer;
     fClickPoint: TPoint;
-
-    fMyPicker: IPicker;
-    fPick: TMyPicker;
 
     isPaintBoxScrollable: Boolean;
     isVertexMoveable: Boolean;
@@ -54,9 +53,7 @@ const
 
 implementation
 
-procedure TMyDrawing.ToolsAction(var Point: T2DPoint; FigType: TTools; Color: TColor; Width: Integer);  // переименовать
-var
-  I: Integer;
+procedure TMyDrawing.ToolsAction(var Point: T2DPoint; FigType: TTools; Color: TColor; Width: Integer);
 begin
   case FigType of
     Line:
@@ -94,12 +91,12 @@ begin
       if (fLastSelectedFigure <> -1) and (fFigures[fLastSelectedFigure].BelongsVertex(Point)) then begin
         fLastSelectedVertex := fFigures[fLastSelectedFigure].GetFigureVertex(Point);
       end else begin
-        for I := 0 to Length(Ffigures) - 1 do begin
+        for var I := 0 to Length(Ffigures) - 1 do begin
           fFigures[I].fSelected := False;
         end;
         fLastSelectedFigure := -1;
         fLastSelectedVertex := -1;
-        for I := Length(Ffigures) - 1 downTo 0 do begin
+        for var I := Length(Ffigures) - 1 downTo 0 do begin
           if fFigures[I].Belongs(Point, fMyPicker) then begin
             fFigures[I].fSelected := True;
             fLastSelectedFigure := I;
@@ -112,10 +109,8 @@ begin
 end;
 
 procedure TMyDrawing.Clean;
-var
-  I: Integer;
 begin
-  for I := 0 to Length(fFigures) - 1 do fFigures[I].Destroy;
+  for var I := 0 to Length(fFigures) - 1 do fFigures[I].Destroy;
   SetLength(fFigures, 0);
 end;
 
@@ -132,12 +127,10 @@ begin
 end;
 
 procedure TMyDrawing.Delete;
-var
-  I, J: Integer;
 begin
   if Length(Ffigures) > 0 then begin
-    J := 0;
-    for I := 0 to Length(fFigures) - 1 do begin
+    var J := 0;
+    for var I := 0 to Length(fFigures) - 1 do begin
       if I = fLastSelectedFigure then Continue
       else begin
         Ffigures[J] := fFigures[I];
@@ -171,7 +164,6 @@ end;
 
 function TMyDrawing.GetCursor(Point: T2DPoint): Integer;
 begin
-  begin
   if (fLastSelectedFigure <> - 1) and
     (fFigures[fLastSelectedFigure].BelongsVertex(Point)) then begin
     Result := -7;
@@ -180,14 +172,11 @@ begin
     Result := -5;
   end else
     Result := -2;
-  end;
 end;
 
 procedure TMyDrawing.HoverFigure(p: T2DPoint);
-var
-  I: Integer;
 begin
-  for I := Length(Ffigures) - 1 downTo 0 do begin
+  for var I := Length(Ffigures) - 1 downTo 0 do begin
     if I = fHoveredFigure then begin
       if not fFigures[I].Belongs(p, fMyPicker) then begin
         ffigures[I].fHovered := False;
@@ -296,11 +285,9 @@ end;
 
 procedure TMyDrawing.VertexMove(Point: T2DPoint);
 begin
-  if (fLastSelectedVertex <> -1) and (fLastSelectedFigure <> -1) then begin
-    fFigures[fLastSelectedFigure].VertexMove(Point, fLastSelectedVertex);
-  end else begin
-    fLastSelectedVertex := -1;
-  end;
+  if (fLastSelectedVertex <> -1) and (fLastSelectedFigure <> -1) then
+    fFigures[fLastSelectedFigure].VertexMove(Point, fLastSelectedVertex)
+  else fLastSelectedVertex := -1;
 end;
 
 end.
