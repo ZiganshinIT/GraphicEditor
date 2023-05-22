@@ -197,7 +197,7 @@ end;
     var x := Dot(tt1, tt2)/L1;
     var t := x / L1;
     Result := p1+t*tt1;
-  end;
+  end else Result := p1;
  end;
 
 { TColor }
@@ -603,30 +603,50 @@ end;
 
 procedure TRectangle.VertexMove(Point: T2DPoint; lastSelectedVertex: Integer);
 begin
+
   if (LastSelectedVertex = 0) then begin
     fVertexArr[LastSelectedVertex].X := Point.X;
     fVertexArr[LastSelectedVertex].Y := Point.Y;
+    if self.Angle = 0  then begin
+      fVertexArr[3].Y := Point.Y;
+      fVertexArr[1].X := Point.X;
+    end else begin
+      fVertexArr[3] := PointProject(Point, fVErtexArr[3],fvertexarr[2]);
+      fVertexArr[1] := PointProject(Point, fVErtexArr[1],fvertexarr[2]);
+    end;
 
-    fVertexArr[1] := PointProject(Point, fVErtexArr[1],fvertexarr[2]);
-    fVertexArr[3] := PointProject(Point, fVErtexArr[2],fvertexarr[3]);
   end else if LastSelectedVertex = 1 then begin
     fVertexArr[LastSelectedVertex].X := Point.X;
     fVertexArr[LastSelectedVertex].Y := Point.Y;
+    if self.Angle = 0  then begin
+      fVertexArr[2].Y := Point.Y;
+      fVertexArr[0].X := Point.X;
+    end else begin
+      fVertexArr[2] := PointProject(Point, fVErtexArr[2],fvertexarr[3]);
+      fVertexArr[0] := PointProject(Point, fVErtexArr[0],fvertexarr[3]);
+    end;
 
-    fVertexArr[2] := PointProject(Point, fVErtexArr[2],fvertexarr[3]);
-    fVertexArr[0] := PointProject(Point, fVErtexArr[0],fvertexarr[3]);
    end else if LastSelectedVertex = 2 then begin
     fVertexArr[LastSelectedVertex].X := Point.X;
     fVertexArr[LastSelectedVertex].Y := Point.Y;
+    if self.Angle = 0  then begin
+      fVertexArr[1].Y := Point.Y;
+      fVertexArr[3].X := Point.X;
+    end else begin
+      fVertexArr[1] := PointProject(Point, fVErtexArr[1],fvertexarr[0]);
+      fVertexArr[3] := PointProject(Point, fVErtexArr[0],fvertexarr[3]);
+    end;
 
-    fVertexArr[1] := PointProject(Point, fVErtexArr[1],fvertexarr[0]);
-    fVertexArr[3] := PointProject(Point, fVErtexArr[0],fvertexarr[3]);
    end else if LastSelectedVertex = 3 then begin
     fVertexArr[LastSelectedVertex].X := Point.X;
     fVertexArr[LastSelectedVertex].Y := Point.Y;
-
-    fVertexArr[2] := PointProject(Point, fVErtexArr[1],fvertexarr[2]);
-    fVertexArr[0] := PointProject(Point, fVErtexArr[0],fvertexarr[1]);
+    if self.Angle = 0  then begin
+      fVertexArr[2].Y := Point.Y;
+      fVertexArr[0].X := Point.X;
+    end else begin
+      fVertexArr[2] := PointProject(Point, fVErtexArr[1],fvertexarr[2]);
+      fVertexArr[0] := PointProject(Point, fVErtexArr[0],fvertexarr[1]);
+    end;
   end;
 end;
 
