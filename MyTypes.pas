@@ -193,11 +193,9 @@ end;
   var tt1 := p2-p1;
   var tt2 := p-p1;
   var L1 := tt1.Length;
-  if L1 <> 0 then begin
-    var x := Dot(tt1, tt2)/L1;
-    var t := x / L1;
-    Result := p1+t*tt1;
-  end else Result := p1;
+  var x := Dot(tt1, tt2)/L1;
+  var t := x / L1;
+  Result := p1+t*tt1;
  end;
 
 { TColor }
@@ -554,6 +552,8 @@ end;
 procedure TRectangle.Rotate(Angle: Double);
 begin
   self.Angle := self.Angle + Angle;
+  if self.Angle = 360 then self.Angle := 0;
+
   var CenterPoint := T2DPoint.Create(fVertexArr[1].X + (fVertexArr[3].X - fVertexArr[1].X) / 2, fVertexArr[1].Y + (fVertexArr[3].Y - fVertexArr[1].Y) / 2);
   for var I := 0 to 3 do begin
     var X := (fVertexArr[I].X - CenterPoint.X) * cos(DegToRad(Angle)) - (fVertexArr[I].Y  - CenterPoint.Y) * sin(DegToRad(Angle)) + CenterPoint.X;
@@ -626,7 +626,7 @@ begin
       fVertexArr[0] := PointProject(Point, fVErtexArr[0],fvertexarr[3]);
     end;
 
-   end else if LastSelectedVertex = 2 then begin
+  end else if LastSelectedVertex = 2 then begin
     fVertexArr[LastSelectedVertex].X := Point.X;
     fVertexArr[LastSelectedVertex].Y := Point.Y;
     if self.Angle = 0  then begin
@@ -637,12 +637,12 @@ begin
       fVertexArr[3] := PointProject(Point, fVErtexArr[0],fvertexarr[3]);
     end;
 
-   end else if LastSelectedVertex = 3 then begin
+  end else if LastSelectedVertex = 3 then begin
     fVertexArr[LastSelectedVertex].X := Point.X;
     fVertexArr[LastSelectedVertex].Y := Point.Y;
     if self.Angle = 0  then begin
-      fVertexArr[2].Y := Point.Y;
-      fVertexArr[0].X := Point.X;
+      fVertexArr[2].X := Point.X;
+      fVertexArr[0].Y := Point.Y;
     end else begin
       fVertexArr[2] := PointProject(Point, fVErtexArr[1],fvertexarr[2]);
       fVertexArr[0] := PointProject(Point, fVErtexArr[0],fvertexarr[1]);
