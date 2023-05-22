@@ -140,7 +140,8 @@ type
     function PickFigure(p: T2DPoint; Picker: IPicker): Boolean; override;
     function ToJSON: TJSONObject; override;
 
-    constructor CreateRectangle(MinPoint, MaxPoint: T2DPoint; Width: Integer; Color: TColor; Angle: Double = 0);
+    constructor CreateRectangle(MinPoint, MaxPoint: T2DPoint; Width: Integer; Color: TColor; Angle: Double = 0); overload;
+    constructor CreateRectangle(Vertex1, Vertex2, Vertex3, Vertex4: T2DPoint; Width: Integer; Color: TColor; Angle: Double = 0); overload;
     constructor CreateFromJSON(json: TJSONValue);
   end;
 
@@ -193,9 +194,12 @@ end;
   var tt1 := p2-p1;
   var tt2 := p-p1;
   var L1 := tt1.Length;
-  var x := Dot(tt1, tt2)/L1;
-  var t := x / L1;
-  Result := p1+t*tt1;
+  if L1 <> 0 then begin
+
+    var x := Dot(tt1, tt2)/L1;
+    var t := x / L1;
+    Result := p1+t*tt1;
+  end;
  end;
 
 { TColor }
@@ -563,6 +567,21 @@ begin
   end
 end;
 
+constructor TRectangle.CreateRectangle(Vertex1, Vertex2, Vertex3,
+  Vertex4: T2DPoint; Width: Integer; Color: TColor; Angle: Double);
+begin
+  self.Width := Width;
+  self.Color := Color;
+  self.Angle := Angle;
+
+  SetLength(self.fDistanceXY, 4);
+  SetLength(self.fVertexArr, 4);
+  fVertexArr[0] := Vertex1;
+  fVertexArr[1] := Vertex2;
+  fVertexArr[2] := Vertex3;
+  fVertexArr[3] := Vertex4;
+end;
+
 procedure TRectangle.Draw(Canvas: ICanvas);
 begin
   Canvas.SetCurrentColor(self.Color.Value);
@@ -586,12 +605,16 @@ begin
   var json := TJSONObject.Create;
   var IntermediateObj := TJSONObject.Create;
 
-  var MinPointObj := SerializePoint(fVertexArr[1]);
-  var MaxPointObj := SerializePoint(fVertexArr[3]);
+  var Vertex0Obj := SerializePoint(fVertexArr[0]);
+  var Vertex1Obj := SerializePoint(fVertexArr[1]);
+  var Vertex2Obj := SerializePoint(fVertexArr[2]);
+  var Vertex3Obj := SerializePoint(fVertexArr[3]);
   var ColorObj := SerializeColor(Color);
 
-  IntermediateObj.AddPair('MinPoint', MinPointObj);
-  IntermediateObj.AddPair('MaxPoint', MaxPointObj);
+  IntermediateObj.AddPair('Vertex0', Vertex0Obj);
+  IntermediateObj.AddPair('Vertex1', Vertex1Obj);
+  IntermediateObj.AddPair('Vertex2', Vertex2Obj);
+  IntermediateObj.AddPair('Vertex3', Vertex3Obj);
   IntermediateObj.AddPair('Angle', FloatToStr(Angle));
   IntermediateObj.AddPair('Width', IntToStr(Width));
   IntermediateObj.AddPair('Color', ColorObj);
@@ -607,9 +630,12 @@ begin
   if (LastSelectedVertex = 0) then begin
     fVertexArr[LastSelectedVertex].X := Point.X;
     fVertexArr[LastSelectedVertex].Y := Point.Y;
-    if self.Angle = 0  then begin
+    if (self.Angle= 0) or (self.Angle = 180) then begin
       fVertexArr[3].Y := Point.Y;
       fVertexArr[1].X := Point.X;
+    end else if (self.Angle = 90) or (self.Angle = 270) then begin
+      fVertexArr[3].X := Point.X;
+      fVertexArr[1].Y := Point.Y;
     end else begin
       fVertexArr[3] := PointProject(Point, fVErtexArr[3],fvertexarr[2]);
       fVertexArr[1] := PointProject(Point, fVErtexArr[1],fvertexarr[2]);
@@ -618,9 +644,12 @@ begin
   end else if LastSelectedVertex = 1 then begin
     fVertexArr[LastSelectedVertex].X := Point.X;
     fVertexArr[LastSelectedVertex].Y := Point.Y;
-    if self.Angle = 0  then begin
+    if (self.Angle= 0) or (self.Angle = 180) then begin
       fVertexArr[2].Y := Point.Y;
       fVertexArr[0].X := Point.X;
+    end else if (self.Angle = 90) or (self.Angle = 270) then begin
+      fVertexArr[2].X := Point.X;
+      fVertexArr[0].Y := Point.Y;
     end else begin
       fVertexArr[2] := PointProject(Point, fVErtexArr[2],fvertexarr[3]);
       fVertexArr[0] := PointProject(Point, fVErtexArr[0],fvertexarr[3]);
@@ -629,9 +658,13 @@ begin
   end else if LastSelectedVertex = 2 then begin
     fVertexArr[LastSelectedVertex].X := Point.X;
     fVertexArr[LastSelectedVertex].Y := Point.Y;
-    if self.Angle = 0  then begin
+
+    if (self.Angle= 0) or (self.Angle = 180) then begin
       fVertexArr[1].Y := Point.Y;
       fVertexArr[3].X := Point.X;
+    end else if (self.Angle = 90) or (self.Angle = 270) then begin
+      fVertexArr[1].X := Point.X;
+      fVertexArr[3].Y := Point.Y;
     end else begin
       fVertexArr[1] := PointProject(Point, fVErtexArr[1],fvertexarr[0]);
       fVertexArr[3] := PointProject(Point, fVErtexArr[0],fvertexarr[3]);
@@ -640,9 +673,13 @@ begin
   end else if LastSelectedVertex = 3 then begin
     fVertexArr[LastSelectedVertex].X := Point.X;
     fVertexArr[LastSelectedVertex].Y := Point.Y;
-    if self.Angle = 0  then begin
+
+    if (self.Angle= 0) or (self.Angle = 180) then begin
       fVertexArr[2].X := Point.X;
       fVertexArr[0].Y := Point.Y;
+    end else if (self.Angle = 90) or (self.Angle = 270) then begin
+      fVertexArr[2].Y := Point.Y;
+      fVertexArr[0].X := Point.X;
     end else begin
       fVertexArr[2] := PointProject(Point, fVErtexArr[1],fvertexarr[2]);
       fVertexArr[0] := PointProject(Point, fVErtexArr[0],fvertexarr[1]);
@@ -654,7 +691,6 @@ constructor TRectangle.CreateRectangle(MinPoint, MaxPoint: T2DPoint; Width: Inte
 begin
   self.Width := Width;
   self.Color := Color;
-  self.Angle := Angle;
 
   SetLength(self.fDistanceXY, 4);
   SetLength(self.fVertexArr, 4);
@@ -666,12 +702,14 @@ end;
 
 constructor TRectangle.CreateFromJSON(json: TJSONValue);
 begin
-  var MinPoint := DeserializePoint(json.FindValue('MinPoint'));
-  var MaxPoint := DeserializePoint(json.FindValue('MaxPoint'));
+  var Vertex0 := DeserializePoint(json.FindValue('Vertex0'));
+  var Vertex1 := DeserializePoint(json.FindValue('Vertex1'));
+  var Vertex2 := DeserializePoint(json.FindValue('Vertex2'));
+  var Vertex3 := DeserializePoint(json.FindValue('Vertex3'));
   var Width := DeserializeInteger(json.FindValue('Width'));
   var Color := DeserializeColor(json.FindValue('Color'));
   var Angle := DeserializeInteger(json.FindValue('Angle'));
 
-  CreateRectangle(MinPoint, MaxPoint, Width, Color, Angle);
+  CreateRectangle(Vertex0, Vertex1, Vertex2, Vertex3, Width, Color, Angle);
 end;
 end.
